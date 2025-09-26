@@ -12,6 +12,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.QuizApp">
         <activity
+            android:theme="@style/Theme.QuizApp.NoActionBar"
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>
