@@ -1,9 +1,9 @@
 package ru.zaikin.quizapp.ui
 
+import android.content.Intent
 import android.graphics.Color
 import android.graphics.Typeface
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.ImageView
@@ -62,25 +62,31 @@ class QuestionsActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     private fun showNextQuestion() {
+        if (currentPosition > questionsList.size) {
+
+            Intent(this, ResultActivity::class.java).also {
+                startActivity(it)
+            }
+
+            finishQuiz()
+        }
+
+        currentQuestion = questionsList[currentPosition - 1]
         resetOptions()
         selectedAnswer = 0
         answered = false
 
-        if (currentPosition <= questionsList.size) {
-            currentQuestion = questionsList[currentPosition - 1]
+        flagImage.setImageResource(currentQuestion.image)
+        textViewQuestion.text = currentQuestion.question
+        textViewOptionOne.text = currentQuestion.optionOne
+        textViewOptionTwo.text = currentQuestion.optionTwo
+        textViewOptionThree.text = currentQuestion.optionThree
+        textViewOptionFour.text = currentQuestion.optionFour
 
-            flagImage.setImageResource(currentQuestion.image)
-            textViewQuestion.text = currentQuestion.question
-            textViewOptionOne.text = currentQuestion.optionOne
-            textViewOptionTwo.text = currentQuestion.optionTwo
-            textViewOptionThree.text = currentQuestion.optionThree
-            textViewOptionFour.text = currentQuestion.optionFour
+        progressBar.progress = currentPosition
+        textViewProgress.text = "$currentPosition/${progressBar.max}"
 
-            progressBar.progress = currentPosition
-            textViewProgress.text = "$currentPosition/${progressBar.max}"
-
-            checkButton.text = if (currentPosition == questionsList.size) "FINISH" else "Check"
-        }
+        checkButton.text = if (currentPosition == questionsList.size) "FINISH" else "Check"
     }
 
     private fun resetOptions() {
@@ -93,7 +99,7 @@ class QuestionsActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     override fun onClick(view: View?) {
-        when(view?.id) {
+        when (view?.id) {
             R.id.text_view_option_one -> selectedOptionText(textViewOptionOne, 1)
             R.id.text_view_option_two -> selectedOptionText(textViewOptionTwo, 2)
             R.id.text_view_option_three -> selectedOptionText(textViewOptionThree, 3)
@@ -121,25 +127,34 @@ class QuestionsActivity : AppCompatActivity(), View.OnClickListener {
 
     private fun checkAnswer() {
         answered = true
-
         val correctOption = currentQuestion.correctAnswer
 
         if (selectedAnswer == correctOption) {
-            when(correctOption) {
-                1 -> textViewOptionOne.background = ContextCompat.getDrawable(this, R.drawable.correct_option_border_bg)
-                2 -> textViewOptionTwo.background = ContextCompat.getDrawable(this, R.drawable.correct_option_border_bg)
-                3 -> textViewOptionThree.background = ContextCompat.getDrawable(this, R.drawable.correct_option_border_bg)
-                4 -> textViewOptionFour.background = ContextCompat.getDrawable(this, R.drawable.correct_option_border_bg)
-            }
+            highlightAnswer(selectedAnswer)
         } else {
-            when(selectedAnswer) {
+            when (selectedAnswer) {
                 1 -> textViewOptionOne.background = ContextCompat.getDrawable(this, R.drawable.wrong_option_border_bg)
                 2 -> textViewOptionTwo.background = ContextCompat.getDrawable(this, R.drawable.wrong_option_border_bg)
                 3 -> textViewOptionThree.background = ContextCompat.getDrawable(this, R.drawable.wrong_option_border_bg)
                 4 -> textViewOptionFour.background = ContextCompat.getDrawable(this, R.drawable.wrong_option_border_bg)
             }
+
+            highlightAnswer(correctOption)
         }
 
         checkButton.text = if (currentPosition == questionsList.size) "FINISH" else "NEXT"
+    }
+
+    private fun highlightAnswer(answer: Int) {
+        when (answer) {
+            1 -> textViewOptionOne.background = ContextCompat.getDrawable(this, R.drawable.correct_option_border_bg)
+            2 -> textViewOptionTwo.background = ContextCompat.getDrawable(this, R.drawable.correct_option_border_bg)
+            3 -> textViewOptionThree.background = ContextCompat.getDrawable(this, R.drawable.correct_option_border_bg)
+            4 -> textViewOptionFour.background = ContextCompat.getDrawable(this, R.drawable.correct_option_border_bg)
+        }
+    }
+
+    private fun finishQuiz() {
+        finish()
     }
 }
