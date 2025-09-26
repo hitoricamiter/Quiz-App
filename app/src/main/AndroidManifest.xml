@@ -12,9 +12,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.QuizApp">
         <activity
-            android:theme="@style/Theme.QuizApp.NoActionBar"
+            android:name=".ui.QuestionsActivity"
+            android:exported="false" />
+        <activity
             android:name=".MainActivity"
-            android:exported="true">
+            android:exported="true"
+            android:theme="@style/Theme.QuizApp.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
